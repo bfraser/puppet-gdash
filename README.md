@@ -134,13 +134,13 @@ Adds a field to a graph.
 
 ```puppet
         gdash::field { "${hostname}_cpu_user":
-        scale       => 1,
-        graph       => "gdash_cpu_usage",
-        color       => "yellow",
-        alias       => "$hostname User",
-        data        => "sumSeries(servers.${hostname}.cpu.total.user)",
-        category    => "gdash",
-        require     => Gdash::Graph["gdash_cpu_usage"],
+        scale           => 1,
+        graph           => "gdash_cpu_usage",
+        color           => "yellow",
+        legend_alias    => "$hostname User",
+        data            => "sumSeries(servers.${hostname}.cpu.total.user)",
+        category        => "gdash",
+        require         => Gdash::Graph["gdash_cpu_usage"],
     }
 ```
 
