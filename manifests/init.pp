@@ -24,7 +24,7 @@
 # === Examples
 #
 #  class { gdash:
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
+#  servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
 #  }
 #
 # === Authors
@@ -36,46 +36,46 @@
 # Copyright 2013 Bill Fraser
 #
 class gdash (
-    $graphite_host   = $gdash::params::graphite_host,
-    $gdash_root      = $gdash::params::gdash_root,
+  $graphite_host = $gdash::params::graphite_host,
+  $gdash_root    = $gdash::params::gdash_root,
 ) inherits gdash::params {
 
-    class { 'gdash::configure': }
+  class { 'gdash::configure': }
 
-    # Install necessary packages
-    package { [ 'ruby-devel', 'git' ]:
-        ensure      => present,
-    }
+  # Install necessary packages
+  package { [ 'ruby-devel', 'git' ]:
+    ensure => present,
+  }
 
-    # Clone GDash Git repository
-    vcsrepo { 'gdash':
-        ensure          => present,
-        path            => $gdash_root,
-        provider        => 'git',
-        source          => 'https://github.com/ripienaar/gdash.git',
-        require         => Package['git'],
-    }
+  # Clone GDash Git repository
+  vcsrepo { 'gdash':
+    ensure   => present,
+    path     => $gdash_root,
+    provider => 'git',
+    require  => Package['git'],
+    source   => 'https://github.com/ripienaar/gdash.git',
+  }
 
-    # Install application dependencies using Bundler
-    bundler::install { $gdash_root:
-        user        => 'root',
-        group       => 'root',
-        deployment  => true,
-        without     => 'development test doc',
-        require     => [ Package['ruby-devel'], Vcsrepo['gdash'] ],
-    }
+  # Install application dependencies using Bundler
+  bundler::install { $gdash_root:
+    deployment => true,
+    group      => 'root',
+    require    => [ Package['ruby-devel'], Vcsrepo['gdash'] ],
+    user       => 'root',
+    without    => 'development test doc',
+  }
 
-    # Create config directory
-    file { "${gdash_root}/config":
-        ensure      => directory,
-        require     => Vcsrepo['gdash'],
-    }
+  # Create config directory
+  file { "${gdash_root}/config":
+    ensure  => directory,
+    require => Vcsrepo['gdash'],
+  }
 
-    # Create default dashboard
-    file { "${gdash_root}/config/gdash.yaml":
-        content     => template('gdash/gdash.yaml.erb'),
-        group       => 'root',
-        owner       => 'root',
-        require     => File["${gdash_root}/config"],
-    }
+  # Create default dashboard
+  file { "${gdash_root}/config/gdash.yaml":
+    content => template('gdash/gdash.yaml.erb'),
+    group   => 'root',
+    owner   => 'root',
+    require => File["${gdash_root}/config"],
+  }
 }

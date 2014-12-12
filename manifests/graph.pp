@@ -1,32 +1,32 @@
 # Create a graph
 define gdash::graph(
-    $graph_title = $title,
-    $vtitle = '',
-    $description = '',
-    $area = 'none',
-    $category = 'servers',
-    $dashboard = $hostname,
-    $ymin = undef,
-    $ymax = undef
+  $area        = 'none',
+  $category    = 'servers',
+  $dashboard   = $hostname,
+  $description = '',
+  $graph_title = $title,
+  $vtitle      = '',
+  $ymax        = undef,
+  $ymin        = undef,
 ) {
-    Gdash::Dashboard[$dashboard] -> Gdash::Graph[$title]
+  Gdash::Dashboard[$dashboard] -> Gdash::Graph[$title]
 
-    $graph_file = "${gdash::configure::template_dir}/${category}/${dashboard}/${title}.graph"
+  $graph_file = "${gdash::configure::template_dir}/${category}/${dashboard}/${title}.graph"
 
-    datacat { $graph_file:
-        template    => 'gdash/graph.erb',
-    }
+  datacat { $graph_file:
+    template => 'gdash/graph.erb',
+  }
 
-    datacat_fragment { "${category}_${title}":
-        target      => $graph_file,
-        loglevel    => 'debug',
-        data        => {
-            area        => $area,
-            ymax        => $ymax,
-            ymin        => $ymin,
-            vtitle      => $vtitle,
-            graph_title => $graph_title,
-            description => $description,
-        },
-    }
+  datacat_fragment { "${category}_${title}":
+    data     => {
+      area        => $area,
+      description => $description,
+      graph_title => $graph_title,
+      vtitle      => $vtitle,
+      ymax        => $ymax,
+      ymin        => $ymin,
+    },
+    loglevel => 'debug',
+    target   => $graph_file,
+  }
 }
